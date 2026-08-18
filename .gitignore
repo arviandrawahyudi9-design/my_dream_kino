@@ -1,0 +1,13 @@
+# Secrets and local configuration
+.env
+
+# Local database and Python runtime files
+*.db
+__pycache__/
+*.py[cod]
+
+# Virtual environments and editor files
+.venv/
+venv/
+.vscode/
+.idea/

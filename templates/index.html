@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kino Bot - Web Admin Paneli</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(22, 30, 46, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+        .stat-info h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.75rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .panel-title i {
+            color: var(--accent-purple);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+        }
+
+        .preview-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.82rem;
+            color: #a5b4fc;
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 20px -5px rgba(168, 85, 247, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -5px rgba(168, 85, 247, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .movie-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .movie-table th {
+            padding: 0.8rem 1rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .movie-table td {
+            padding: 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        .movie-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .movie-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .badge-code {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .badge-id {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            display: inline-block;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e293b;
+            border: 1px solid var(--accent-purple);
+            color: white;
+            padding: 1rem 1.4rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Tabs and Modal CSS */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: rgba(168, 85, 247, 0.15);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .close-btn {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem; cursor: pointer;
+        }
+        .filter-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            outline: none;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-clapperboard"></i>
+            </div>
+            <div class="brand-text">
+                <h1>My Dream Kino — Admin</h1>
+                <p>Bot kinolarini boshqarish va havola orqali biriktirish</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fa-solid fa-film"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="stat-total-movies">{{ stats.total_movies }}</h3>
+                <p>Jami Saqlangan Kinolar</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_users }}</h3>
+                <p>Bot Foydalanuvchilari</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.verified_users }}</h3>
+                <p>Tasdiqlangan Foydalanuvchilar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+        <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('movies')"><i class="fa-solid fa-film"></i> Kinolar</button>
+        <button class="tab-btn" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> Foydalanuvchilar</button>
+        <button class="tab-btn" onclick="switchTab('genres')"><i class="fa-solid fa-masks-theater"></i> Janrlar</button>
+    </div>
+
+    <!-- Main Grid -->
+    <div id="movies-tab" class="content-grid tab-content active">
+        <!-- Form Panel -->
+        <div class="glass-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    Yangi Kino Qo'shish
+                </h2>
+            </div>
+
+            <form id="addMovieForm">
+                <!-- Telegram Link Input -->
+                <div class="form-group">
+                    <label class="form-label" for="url_or_id">Kino Havolasi (Telegram Post Link):</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-link"></i>
+                        <input type="text" id="url_or_id" class="form-input" placeholder="masalan: https://t.me/c/3577187745/2" required>
+                    </div>
+                    <div class="preview-box" id="previewBox" style="display: none;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Message ID: <strong id="detectedMsgId">-</strong></span>
+                    </div>
+                </div>
+
+                <!-- Movie Code -->
+                <div class="form-group">
+                    <label class="form-label" for="code">Kino Kodi (Foydalanuvchi yozadigan kod):</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input type="text" id="code" class="form-input" placeholder="masalan: 5" required>
+                    </div>
+                </div>
+
+                <!-- Movie Title -->
+                <div class="form-group">
+                    <label class="form-label" for="title">Kino Nomi (Ixtiyoriy):</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-font"></i>
+                        <input type="text" id="title" class="form-input" placeholder="masalan: Mening Kino 5">
+                    </div>
+                </div>
+
+                <!-- Genre -->
+                <div class="form-group">
+                    <label class="form-label" for="genre">Janr (Ixtiyoriy):</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-masks-theater"></i>
+                        <select id="genre" class="form-input" style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+                            <option value="">Janrni tanlang...</option>
+                            {% for g in genres %}
+                                <option value="{{ g[1] }}">{{ g[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Botga Saqlash
+                </button>
+            </form>
+        </div>
+
+        <!-- Movie List Panel -->
+        <div class="glass-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i class="fa-solid fa-list-ul"></i>
+                    Saqlangan Kinolar Ro'yxati
+                </h2>
+                <select class="filter-select" onchange="window.location.href='/?genre=' + this.value">
+                    <option value="">Barcha Janrlar</option>
+                    {% for g in genres %}
+                        <option value="{{ g[1] }}" {% if current_genre == g[1] %}selected{% endif %}>{{ g[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table class="movie-table" id="movieTable">
+                    <thead>
+                        <tr>
+                            <th>Kino Kodi</th>
+                            <th>Message ID</th>
+                            <th>Nomi</th>
+                            <th>Janr</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movieTableBody">
+                        {% if movies %}
+                            {% for m in movies %}
+                            <tr id="row-{{ m[0] }}">
+                                <td><span class="badge-code">{{ m[0] }}</span></td>
+                                <td><span class="badge-id">ID: {{ m[1] }}</span></td>
+                                <td>{{ m[2] if m[2] else 'Sarlavhasiz' }}</td>
+                                <td>{{ m[3] if m[3] else '-' }}</td>
+                                <td>
+                                    <button class="btn-delete" onclick="deleteMovie('{{ m[0] }}')">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr id="noMoviesRow">
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-film"></i>
+                                        <p>Hozircha hech qanday kino saqlanmagan.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- End Movies Tab -->
+
+    <!-- Users Tab -->
+    <div id="users-tab" class="tab-content">
+        <div class="glass-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i class="fa-solid fa-users"></i>
+                    Foydalanuvchilar va Ularning Kinolari
+                </h2>
+            </div>
+            <div class="table-responsive">
+                <table class="movie-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Telefon Raqam</th>
+                            <th>Yuklab olingan kinolar</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if users %}
+                            {% for u in users %}
+                            <tr>
+                                <td><span class="badge-code">{{ u[0] }}</span></td>
+                                <td>{{ u[1] if u[1] else 'Tasdiqlanmagan' }}</td>
+                                <td><span class="badge-id">{{ u[2] }} ta</span></td>
+                                <td>
+                                    <button class="btn-submit" style="width: auto; padding: 0.5rem 1rem;" onclick="viewUserMovies({{ u[0] }})">
+                                        Ko'rish
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-users-slash"></i>
+                                        <p>Foydalanuvchilar topilmadi.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- End Users Tab -->
+
+
+    <!-- Genres Tab -->
+    <div id="genres-tab" class="tab-content">
+        <div class="content-grid">
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        Yangi Janr Qo'shish
+                    </h2>
+                </div>
+                <form id="addGenreForm">
+                    <div class="form-group">
+                        <label class="form-label" for="genreName">Janr Nomi:</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-masks-theater"></i>
+                            <input type="text" id="genreName" class="form-input" placeholder="masalan: Komediya" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-plus"></i> Qo'shish
+                    </button>
+                </form>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-list"></i>
+                        Mavjud Janrlar
+                    </h2>
+                </div>
+                <div class="table-responsive">
+                    <table class="movie-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nomi</th>
+                                <th>Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if genres %}
+                                {% for g in genres %}
+                                <tr>
+                                    <td><span class="badge-code">{{ g[0] }}</span></td>
+                                    <td>{{ g[1] }}</td>
+                                    <td>
+                                        <button class="btn-delete" onclick="deleteGenre({{ g[0] }})">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" style="text-align:center; padding: 2rem; color: var(--text-muted);">
+                                        <i class="fa-solid fa-masks-theater" style="font-size:2rem; opacity: 0.3; display:block; margin-bottom:1rem;"></i>
+                                        Janrlar mavjud emas
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End Genres Tab -->
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="moviesModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Foydalanuvchi Kinolari</h2>
+            <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="table-responsive">
+            <table class="movie-table">
+                <thead>
+                    <tr>
+                        <th>Kod</th>
+                        <th>Nomi</th>
+                        <th>Janr</th>
+                        <th>Sana</th>
+                    </tr>
+                </thead>
+                <tbody id="userMoviesBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check" style="color: #34d399; font-size: 1.3rem;"></i>
+    <span id="toastMsg">Muvaffaqiyatli saqlandi!</span>
+</div>
+
+<script>
+    // Live preview of Message ID from URL
+    const urlInput = document.getElementById('url_or_id');
+    const previewBox = document.getElementById('previewBox');
+    const detectedMsgId = document.getElementById('detectedMsgId');
+
+    urlInput.addEventListener('input', function() {
+        const val = this.value.trim();
+        const match = val.match(/\/(\d+)\/?$/);
+        if (match) {
+            detectedMsgId.innerText = match[1];
+            previewBox.style.display = 'flex';
+        } else if (/^\d+$/.test(val)) {
+            detectedMsgId.innerText = val;
+            previewBox.style.display = 'flex';
+        } else {
+            previewBox.style.display = 'none';
+        }
+    });
+
+    // Form Submit (AJAX)
+    document.getElementById('addMovieForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const url_or_id = document.getElementById('url_or_id').value.trim();
+        const code = document.getElementById('code').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const genre = document.getElementById('genre').value.trim();
+
+        try {
+            const res = await fetch('/api/add-movie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url_or_id, code, title, genre })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message);
+                addTableRow(data.movie.code, data.movie.message_id, data.movie.title, data.movie.genre);
+
+                
+                // Form reset
+                document.getElementById('addMovieForm').reset();
+                previewBox.style.display = 'none';
+
+                // Stats update
+                const totalEl = document.getElementById('stat-total-movies');
+                totalEl.innerText = parseInt(totalEl.innerText || 0) + 1;
+            } else {
+                showToast(data.message, true);
+            }
+        } catch (err) {
+            showToast("Server bilan ulanishda xatolik!", true);
+        }
+    });
+
+    // Add row to table dynamically
+    function addTableRow(code, msgId, title, genre) {
+        const tbody = document.getElementById('movieTableBody');
+        const noRow = document.getElementById('noMoviesRow');
+        if (noRow) noRow.remove();
+
+        // Check if row already exists
+        const existingRow = document.getElementById(`row-${code}`);
+        if (existingRow) existingRow.remove();
+
+        const tr = document.createElement('tr');
+        tr.id = `row-${code}`;
+        tr.innerHTML = `
+            <td><span class="badge-code">${code}</span></td>
+            <td><span class="badge-id">ID: ${msgId}</span></td>
+            <td>${title ? title : 'Sarlavhasiz'}</td>
+            <td>${genre ? genre : '-'}</td>
+            <td>
+                <button class="btn-delete" onclick="deleteMovie('${code}')">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>
+        `;
+
+        tbody.insertBefore(tr, tbody.firstChild);
+    }
+
+    // Delete Movie
+    async function deleteMovie(code) {
+        if (!confirm(`Haqiqatan ham "${code}" kodli kinoni o'chirmoqchimisiz?`)) return;
+
+        try {
+            const res = await fetch(`/api/delete-movie/${code}`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message);
+                const row = document.getElementById(`row-${code}`);
+                if (row) row.remove();
+            }
+        } catch (err) {
+            showToast("O'chirishda xatolik yuz berdi!", true);
+        }
+    }
+
+    // Toast function
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const icon = toast.querySelector('i');
+
+        toastMsg.innerText = msg;
+        if (isError) {
+            toast.style.borderColor = '#ef4444';
+            icon.className = 'fa-solid fa-circle-exclamation';
+            icon.style.color = '#ef4444';
+        } else {
+            toast.style.borderColor = '#a855f7';
+            icon.className = 'fa-solid fa-circle-check';
+            icon.style.color = '#34d399';
+        }
+
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // Tabs functionality
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Modal functionality
+    async function viewUserMovies(userId) {
+        try {
+            const res = await fetch(`/api/user/${userId}/movies`);
+            const data = await res.json();
+            
+            const tbody = document.getElementById('userMoviesBody');
+            tbody.innerHTML = '';
+            
+            if (data.movies.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Kino yuklanmagan</td></tr>';
+            } else {
+                data.movies.forEach(m => {
+                    const date = new Date(m.downloaded_at).toLocaleString('uz-UZ');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><span class="badge-code">${m.code}</span></td>
+                            <td>${m.title || '-'}</td>
+                            <td>${m.genre || '-'}</td>
+                            <td><small>${date}</small></td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            document.getElementById('moviesModal').classList.add('show');
+        } catch (e) {
+            showToast("Ma'lumotni yuklashda xatolik!", true);
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('moviesModal').classList.remove('show');
+    }
+
+    // Genre Scripts
+    document.getElementById('addGenreForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('genreName').value.trim();
+        try {
+            const res = await fetch('/api/add-genre', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast(data.message, true);
+            }
+        } catch(err) {
+            showToast("Xatolik", true);
+        }
+    });
+
+    async function deleteGenre(id) {
+        if (!confirm("Janrni o'chirmoqchimisiz?")) return;
+        try {
+            const res = await fetch(`/api/delete-genre/${id}`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } catch(err) {
+            showToast("Xatolik", true);
+        }
+    }
+</script>
+
+</body>
+</html>
