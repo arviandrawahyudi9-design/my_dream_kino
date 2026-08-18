@@ -11,7 +11,9 @@ from database import Database
 
 load_dotenv()
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": os.getenv("FRONTEND_URL", "*").split(",")}})
+configured_origins = [origin.strip() for origin in os.getenv("FRONTEND_URL", "").split(",") if origin.strip()]
+allowed_origins = configured_origins or ["https://my-dream-kino.vercel.app", "http://localhost:3000"]
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 db = Database()
 
 
