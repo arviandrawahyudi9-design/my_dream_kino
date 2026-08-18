@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kino Bot — Admin panel</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter,system-ui,sans-serif; background:#090d16; color:#f8fafc; }
+    body { max-width:1200px; margin:auto; padding:24px; } h1 { margin:0 } .muted { color:#94a3b8 }
+    .stats, main { display:grid; gap:16px; } .stats { grid-template-columns:repeat(3,1fr); margin:24px 0; }
+    main { grid-template-columns:360px 1fr; } .card { background:#161e2e; border:1px solid #293347; border-radius:16px; padding:20px; }
+    input,select,button { width:100%; padding:11px; margin:6px 0 12px; border-radius:8px; border:1px solid #41506b; background:#0f172a; color:white; }
+    button { cursor:pointer; border:0; background:#6d5dfc; font-weight:700; } button.delete { background:#dc2626; width:auto; margin:0; padding:7px 10px; }
+    table { width:100%; border-collapse:collapse; } td,th { text-align:left; padding:10px 6px; border-bottom:1px solid #293347; } .error { color:#fca5a5; }
+    @media(max-width:800px) { .stats,main { grid-template-columns:1fr; } .card { overflow:auto; } }
+  </style>
+</head>
+<body>
+  <header><h1>🎬 Kino Bot</h1><p class="muted">Web admin paneli</p></header>
+  <p id="status" class="muted">Yuklanmoqda...</p>
+  <section class="stats"><div class="card"><b id="movies-count">0</b><br>Kinolar</div><div class="card"><b id="users-count">0</b><br>Foydalanuvchilar</div><div class="card"><b id="verified-count">0</b><br>Tasdiqlanganlar</div></section>
+  <main>
+    <section class="card"><h2>Kino qo‘shish</h2><form id="movie-form"><input name="url_or_id" placeholder="Telegram havolasi yoki Message ID" required><input name="code" placeholder="Kino kodi" required><input name="title" placeholder="Kino nomi"><select name="genre" id="genre-select"><option value="">Janrsiz</option></select><button>Saqlash</button></form><hr><h2>Janr qo‘shish</h2><form id="genre-form"><input name="name" placeholder="Janr nomi" required><button>Janr qo‘shish</button></form></section>
+    <section class="card"><h2>Kinolar</h2><select id="filter"><option value="">Barcha janrlar</option></select><table><thead><tr><th>Kod</th><th>Nomi</th><th>Janr</th><th>ID</th><th></th></tr></thead><tbody id="movies"></tbody></table><h2>Foydalanuvchilar</h2><table><thead><tr><th>ID</th><th>Telefon</th><th>Yuklashlar</th></tr></thead><tbody id="users"></tbody></table></section>
+  </main>
+  <script src="config.js"></script><script src="app.js"></script>
+</body>
+</html>

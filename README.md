@@ -1,46 +1,48 @@
-# Telegram Kino Bot (Python / aiogram 3)
+# Telegram Kino Bot
 
-Ushbu bot Telegram yopiq kanalidan kinolarni kodi orqali foydalanuvchilarga yuboradi.
+Telegram yopiq kanalidagi kinolarni kod orqali yuboradigan bot va admin panel.
 
-## Imkoniyatlari:
-1. **📱 Telefon raqam tasdiqlash:** Foydalanuvchi `/start` bosganda kontaktini ulashishi kerak.
-2. **📢 Majburiy obuna:** Ko'rsatilgan kanalga obuna bo'lmaguncha bot ishlamaydi.
-3. **🎬 Yopiq kanaldan kino yuborish:** Kinolar yopiq kanalda saqlanadi va bot `copy_message` orqali ularni foydalanuvchiga kod bo'yicha uzatadi.
-4. **👑 Admin paneli (Kino qo'shish):** Admin `/add <kod> <message_id> [nomi]` orqali yangi kinolarni bazaga biriktirishi mumkin.
+## Arxitektura
 
----
+- **Supabase** — foydalanuvchilar, kinolar, janrlar va yuklab olishlar bazasi.
+- **Render Web Service** — Flask REST API (`web_app.py`).
+- **Render Background Worker** — doimiy ishlovchi Telegram bot (`bot.py`).
+- **Vercel** — admin panelning statik frontend'i (`frontend/`).
 
-## 🛠 O'rnatish va Ishga tushirish
+## Lokal sozlash
 
-### 1. Kutubxonalarni o'rnatish:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. `.env` faylini sozlash:
-`.env.example` faylidan nusxa olib `.env` yaratasiz va o'z ma'lumotlaringizni kiritasiz:
-```env
-BOT_TOKEN=777777777:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-ADMIN_ID=123456789
-CHANNEL_ID=@sizning_obuna_kanalingiz
-MOVIE_CHANNEL_ID=-1009876543210
-```
+`.env.example` faylidan `.env` yarating va Telegram hamda Supabase qiymatlarini kiriting. `SUPABASE_SERVICE_ROLE_KEY` maxfiy kalit bo'lib, hech qachon frontendga joylanmaydi.
 
-> **MUHIM:** 
-> - `MOVIE_CHANNEL_ID` — bu kinolar saqlanadigan **Yopiq Kanal ID** si.
-> - **Bot shu yopiq kanalda ham, majburiy obuna kanalida ham ADMIN bo'lishi va habarlarni yuborish huquqiga ega bo'lishi shart!**
+## Production deployment
 
-### 3. Botni ishga tushirish:
+### 1. Supabase
+
+1. Supabase'da yangi loyiha yarating.
+2. SQL Editor oynasida [`supabase/schema.sql`](supabase/schema.sql) kodini bir marta ishga tushiring.
+3. Project Settings → API bo'limidan `SUPABASE_URL` va **service_role** kalitini oling.
+4. Avvalgi lokal bazani saqlash uchun `.env` ga Supabase kalitlarini qo'shing va bir marta ishga tushiring:
+
 ```bash
-python bot.py
+python migrate_sqlite_to_supabase.py
 ```
 
----
+### 2. Render
 
-## 🎬 Yopiq kanaldan kino kodi va Message ID olish:
-1. Kinoni yopiq kanalga yuklaysiz.
-2. Shu postning havolasini (linkini) nusxalaysiz. 
-   - Masalan: `https://t.me/c/1987654321/45`
-   - Oxiridagi `45` soni — bu `message_id` hisoblanadi.
-3. Admin botga yozadi: `/add 101 45 Super Kino`
-4. Endi foydalanuvchi botga `101` deb yuborsa, bot yopiq kanaldagi `45`-xabarni (videoni) foydalanuvchiga yuboradi!
+Render'da **New → Blueprint** orqali GitHub repozitoriyini ulang. `render.yaml` avtomatik ikkita servis yaratadi:
+
+- `my-dream-kino-api` — Web Service
+- `my-dream-kino-bot` — Background Worker
+
+Ikkala servisga `SUPABASE_URL` va `SUPABASE_SERVICE_ROLE_KEY` qo'shing. Bot servisiga `BOT_TOKEN`, `ADMIN_ID`, `CHANNEL_ID`, `MOVIE_CHANNEL_ID` ham qo'shiladi. API servisiga Vercel manzilingizni `FRONTEND_URL` sifatida kiriting.
+
+### 3. Vercel
+
+1. Repozitoriyni Vercel'ga import qiling.
+2. **Root Directory** sifatida `frontend` ni belgilang va deploy qiling.
+3. `frontend/config.js` ichidagi `API_BASE_URL` ga Render API manzilini yozing, masalan `https://my-dream-kino-api.onrender.com`, so'ng GitHub'ga push qiling.
+
+API manzili maxfiy ma'lumot emas; u frontend uchun Git'da saqlanadi. Service role kalitini esa faqat Render environment variables orqali qo'shing.

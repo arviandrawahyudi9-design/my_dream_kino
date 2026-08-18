@@ -1,148 +1,108 @@
-import sqlite3
+"""Supabase data-access layer for the Kino Bot and admin API."""
+
+import os
+from datetime import datetime, timezone
+
+from dotenv import load_dotenv
+from supabase import Client, create_client
+
+load_dotenv()
+
 
 class Database:
-    def __init__(self, db_file="kino_bot.db"):
-        self.db_file = db_file
-        self.create_tables()
-
-    def get_connection(self):
-        return sqlite3.connect(self.db_file)
-
-    def create_tables(self):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    user_id INTEGER PRIMARY KEY,
-                    phone TEXT,
-                    verified INTEGER DEFAULT 0
-                )
-            """)
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS movies (
-                    code TEXT PRIMARY KEY,
-                    message_id INTEGER,
-                    title TEXT,
-                    genre TEXT DEFAULT ''
-                )
-            """)
-            # Check if genre exists, if not, add it
-            cursor.execute("PRAGMA table_info(movies)")
-            columns = [info[1] for info in cursor.fetchall()]
-            if 'genre' not in columns:
-                cursor.execute("ALTER TABLE movies ADD COLUMN genre TEXT DEFAULT ''")
-
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS downloads (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    movie_code TEXT,
-                    downloaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS genres (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT UNIQUE
-                )
-            """)
-            conn.commit()
+    def __init__(self):
+        url = os.getenv("SUPABASE_URL")
+        key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        if not url or not key:
+            raise RuntimeError(
+                "SUPABASE_URL va SUPABASE_SERVICE_ROLE_KEY muhit o'zgaruvchilari sozlanmagan."
+            )
+        self.client: Client = create_client(url, key)
 
     def add_user(self, user_id):
-        with self.get_connection() as conn:
-            conn.execute("INSERT OR IGNORE INTO users (user_id) VALUES (?)", (user_id,))
+        self.client.table("users").upsert({"user_id": user_id}, on_conflict="user_id").execute()
 
     def set_phone(self, user_id, phone):
-        with self.get_connection() as conn:
-            conn.execute("UPDATE users SET phone = ?, verified = 1 WHERE user_id = ?", (phone, user_id))
+        self.client.table("users").update({"phone": phone, "verified": True}).eq("user_id", user_id).execute()
 
     def is_verified(self, user_id):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT verified FROM users WHERE user_id = ?", (user_id,))
-            row = cursor.fetchone()
-            return bool(row and row[0] == 1)
+        result = self.client.table("users").select("verified").eq("user_id", user_id).maybe_single().execute()
+        return bool(result.data and result.data.get("verified"))
 
     def add_movie(self, code, message_id, title="", genre=""):
-        with self.get_connection() as conn:
-            conn.execute(
-                "INSERT OR REPLACE INTO movies (code, message_id, title, genre) VALUES (?, ?, ?, ?)",
-                (str(code).strip(), int(message_id), title, genre)
-            )
+        payload = {
+            "code": str(code).strip(),
+            "message_id": int(message_id),
+            "title": title or "",
+            "genre": genre or "",
+        }
+        self.client.table("movies").upsert(payload, on_conflict="code").execute()
 
     def get_movie(self, code):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT message_id, title, genre FROM movies WHERE code = ?", (str(code).strip(),))
-            return cursor.fetchone()
+        result = self.client.table("movies").select("message_id,title,genre").eq("code", str(code).strip()).maybe_single().execute()
+        if not result.data:
+            return None
+        movie = result.data
+        return movie["message_id"], movie.get("title", ""), movie.get("genre", "")
 
     def get_all_movies(self, genre=None):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            if genre:
-                cursor.execute("SELECT code, message_id, title, genre FROM movies WHERE genre = ? ORDER BY ROWID DESC", (genre,))
-            else:
-                cursor.execute("SELECT code, message_id, title, genre FROM movies ORDER BY ROWID DESC")
-            return cursor.fetchall()
+        query = self.client.table("movies").select("code,message_id,title,genre,created_at").order("created_at", desc=True)
+        if genre:
+            query = query.eq("genre", genre)
+        result = query.execute()
+        return result.data or []
 
     def delete_movie(self, code):
-        with self.get_connection() as conn:
-            conn.execute("DELETE FROM movies WHERE code = ?", (str(code).strip(),))
+        self.client.table("movies").delete().eq("code", str(code).strip()).execute()
 
     def get_stats(self):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM users")
-            total_users = cursor.fetchone()[0]
-            cursor.execute("SELECT COUNT(*) FROM users WHERE verified = 1")
-            verified_users = cursor.fetchone()[0]
-            cursor.execute("SELECT COUNT(*) FROM movies")
-            total_movies = cursor.fetchone()[0]
-            return {
-                "total_users": total_users,
-                "verified_users": verified_users,
-                "total_movies": total_movies
-            }
+        users = self.client.table("users").select("user_id,verified").execute().data or []
+        movies = self.client.table("movies").select("code", count="exact").execute()
+        return {
+            "total_users": len(users),
+            "verified_users": sum(1 for user in users if user.get("verified")),
+            "total_movies": movies.count or 0,
+        }
 
     def record_download(self, user_id, movie_code):
-        with self.get_connection() as conn:
-            conn.execute("INSERT INTO downloads (user_id, movie_code) VALUES (?, ?)", (user_id, str(movie_code).strip()))
+        self.client.table("downloads").insert({"user_id": user_id, "movie_code": str(movie_code).strip()}).execute()
 
     def get_all_users(self):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT u.user_id, u.phone, COUNT(d.id) as downloads_count
-                FROM users u
-                LEFT JOIN downloads d ON u.user_id = d.user_id
-                GROUP BY u.user_id
-                ORDER BY downloads_count DESC
-            """)
-            return cursor.fetchall()
+        users = self.client.table("users").select("user_id,phone,downloads(id)").execute().data or []
+        return [
+            {
+                "user_id": user["user_id"],
+                "phone": user.get("phone"),
+                "downloads_count": len(user.get("downloads") or []),
+            }
+            for user in sorted(users, key=lambda item: len(item.get("downloads") or []), reverse=True)
+        ]
 
     def get_user_downloads(self, user_id):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT m.code, m.title, m.genre, d.downloaded_at
-                FROM downloads d
-                JOIN movies m ON d.movie_code = m.code
-                WHERE d.user_id = ?
-                ORDER BY d.downloaded_at DESC
-            """, (user_id,))
-            return cursor.fetchall()
+        result = (
+            self.client.table("downloads")
+            .select("movie_code,downloaded_at,movies(code,title,genre)")
+            .eq("user_id", user_id)
+            .order("downloaded_at", desc=True)
+            .execute()
+        )
+        downloads = []
+        for item in result.data or []:
+            movie = item.get("movies") or {}
+            downloads.append({
+                "code": movie.get("code", item["movie_code"]),
+                "title": movie.get("title", "Sarlavhasiz"),
+                "genre": movie.get("genre", ""),
+                "downloaded_at": item["downloaded_at"],
+            })
+        return downloads
 
     def add_genre(self, name):
-        with self.get_connection() as conn:
-            conn.execute("INSERT OR IGNORE INTO genres (name) VALUES (?)", (name.strip(),))
+        self.client.table("genres").upsert({"name": name.strip()}, on_conflict="name").execute()
 
     def get_all_genres(self):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, name FROM genres ORDER BY name ASC")
-            return cursor.fetchall()
-            
-    def delete_genre(self, genre_id):
-        with self.get_connection() as conn:
-            conn.execute("DELETE FROM genres WHERE id = ?", (genre_id,))
+        result = self.client.table("genres").select("id,name").order("name").execute()
+        return result.data or []
 
+    def delete_genre(self, genre_id):
+        self.client.table("genres").delete().eq("id", genre_id).execute()
