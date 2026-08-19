@@ -1,4 +1,4 @@
-// Render API manzilini deploydan avval shu yerda kiriting.
+// Cloudflare Workers API manzili
 window.KINO_CONFIG = {
-  API_BASE_URL: "https://my-dream-kino-api.onrender.com"
+  API_BASE_URL: "https://kino-bot-backend.arviandrawahyudi9.workers.dev"
 };
