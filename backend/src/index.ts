@@ -34,7 +34,14 @@ app.get('/api/dashboard', async (c) => {
     movies = (await c.env.DB.prepare(moviesQuery).all()).results
   }
 
-  const allUsers = (await c.env.DB.prepare('SELECT user_id, phone FROM users').all()).results
+  const allUsersRes = await c.env.DB.prepare(`
+    SELECT u.user_id, u.phone, u.verified, COUNT(d.id) as downloads_count
+    FROM users u
+    LEFT JOIN downloads d ON u.user_id = d.user_id
+    GROUP BY u.user_id
+    ORDER BY downloads_count DESC
+  `).all()
+  const allUsers = allUsersRes.results
   const allGenres = (await c.env.DB.prepare('SELECT id, name FROM genres ORDER BY name').all()).results
 
   return c.json({
@@ -80,6 +87,18 @@ app.post('/api/delete-genre/:id', async (c) => {
   const id = c.req.param('id')
   await c.env.DB.prepare('DELETE FROM genres WHERE id = ?').bind(id).run()
   return c.json({ success: true, message: "O'chirildi" })
+})
+
+app.get('/api/user/:id/movies', async (c) => {
+  const userId = c.req.param('id')
+  const res = await c.env.DB.prepare(`
+    SELECT m.code, m.title, m.genre, d.downloaded_at
+    FROM downloads d
+    JOIN movies m ON d.movie_code = m.code
+    WHERE d.user_id = ?
+    ORDER BY d.downloaded_at DESC
+  `).bind(userId).all()
+  return c.json({ success: true, movies: res.results || [] })
 })
 
 // ==========================
