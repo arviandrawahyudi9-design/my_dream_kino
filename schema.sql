@@ -1,0 +1,32 @@
+DROP TABLE IF EXISTS downloads;
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS genres;
+
+CREATE TABLE users (
+    user_id INTEGER PRIMARY KEY,
+    phone TEXT,
+    verified BOOLEAN DEFAULT 0
+);
+
+CREATE TABLE movies (
+    code TEXT PRIMARY KEY,
+    message_id INTEGER NOT NULL,
+    title TEXT,
+    genre TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE downloads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    movie_code TEXT NOT NULL,
+    downloaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(movie_code) REFERENCES movies(code) ON DELETE CASCADE
+);
+
+CREATE TABLE genres (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL
+);

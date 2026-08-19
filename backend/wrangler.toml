@@ -1,0 +1,9 @@
+name = "kino-bot-backend"
+main = "src/index.ts"
+compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kino-bot-db"
+database_id = "4be8c74c-a5ae-4c89-a9c3-44752497fc0f"
