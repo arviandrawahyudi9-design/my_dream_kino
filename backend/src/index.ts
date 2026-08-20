@@ -28,9 +28,9 @@ app.get('/api/dashboard', async (c) => {
   
   let movies = []
   if (genre) {
-    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, created_at FROM movies WHERE genre = ? ORDER BY created_at DESC').bind(genre).all()).results
+    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, year, created_at FROM movies WHERE genre = ? ORDER BY created_at DESC').bind(genre).all()).results
   } else {
-    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, created_at FROM movies ORDER BY created_at DESC').all()).results
+    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, year, created_at FROM movies ORDER BY created_at DESC').all()).results
   }
 
   const allUsersRes = await c.env.DB.prepare(`
@@ -62,14 +62,15 @@ app.post('/api/add-movie', async (c) => {
   if (isNaN(message_id)) return c.json({ success: false, message: "Message ID xato." }, 400)
 
   await c.env.DB.prepare(`
-    INSERT INTO movies (code, message_id, title, genre, quality, language) VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO movies (code, message_id, title, genre, quality, language, year) VALUES (?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(code) DO UPDATE SET
       message_id=excluded.message_id,
       title=excluded.title,
       genre=excluded.genre,
       quality=excluded.quality,
-      language=excluded.language
-  `).bind(code, message_id, data.title || "", data.genre || "", data.quality || "", data.language || "").run()
+      language=excluded.language,
+      year=excluded.year
+  `).bind(code, message_id, data.title || "", data.genre || "", data.quality || "", data.language || "", data.year || "").run()
 
   return c.json({ success: true, message: "Kino saqlandi!" })
 })
@@ -96,7 +97,7 @@ app.post('/api/delete-genre/:id', async (c) => {
 app.get('/api/user/:id/movies', async (c) => {
   const userId = c.req.param('id')
   const res = await c.env.DB.prepare(`
-    SELECT m.code, m.title, m.genre, d.downloaded_at
+    SELECT m.code, m.title, m.genre, m.quality, m.language, m.year, d.downloaded_at
     FROM downloads d
     JOIN movies m ON d.movie_code = m.code
     WHERE d.user_id = ?
@@ -236,6 +237,7 @@ app.post('/webhook', async (c) => {
 
           let caption = `🎬 *${movie.title || 'Kino'}*\n`
           caption += `━━━━━━━━━━━━━━━\n`
+          if (movie.year)     caption += `📅 Yil: ${movie.year}\n`
           if (movie.genre)    caption += `🏷 Janr: ${movie.genre}\n`
           if (movie.quality)  caption += `${qualityMap[movie.quality as string] || movie.quality}\n`
           if (movie.language) caption += `${langMap[movie.language as string] || movie.language}\n`

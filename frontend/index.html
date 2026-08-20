@@ -628,6 +628,7 @@
             <tr>
               <th>Kod</th>
               <th>Kino nomi</th>
+              <th>Yil</th>
               <th>Janr</th>
               <th>Sifat</th>
               <th>Til</th>
@@ -635,7 +636,7 @@
             </tr>
           </thead>
           <tbody id="movies-body">
-            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">⌛</div><p>Yuklanmoqda...</p></div></td></tr>
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">⌛</div><p>Yuklanmoqda...</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -708,11 +709,17 @@
     </div>
     <div class="form-row">
       <div class="form-group">
+        <label>CHIQARILGAN YILI</label>
+        <input id="m-year" class="form-control" type="text" placeholder="Masalan: 2024">
+      </div>
+      <div class="form-group">
         <label>JANR</label>
         <select id="m-genre" class="form-control">
           <option value="">Janrsiz</option>
         </select>
       </div>
+    </div>
+    <div class="form-row">
       <div class="form-group">
         <label>SIFAT (KOKLIK)</label>
         <select id="m-quality" class="form-control">
@@ -723,18 +730,18 @@
           <option value="4k">✨ 4K Ultra HD</option>
         </select>
       </div>
-    </div>
-    <div class="form-group">
-      <label>KINO TILI</label>
-      <select id="m-language" class="form-control">
-        <option value="">Belgilanmagan</option>
-        <option value="uz">🇺🇿 O'zbek</option>
-        <option value="ru">🇷🇺 Rus</option>
-        <option value="en">🇬🇧 Ingliz</option>
-        <option value="tr">🇹🇷 Turk</option>
-        <option value="ko">🇰🇷 Koreys</option>
-        <option value="hi">🇮🇳 Hind</option>
-      </select>
+      <div class="form-group">
+        <label>KINO TILI</label>
+        <select id="m-language" class="form-control">
+          <option value="">Belgilanmagan</option>
+          <option value="uz">🇺🇿 O'zbek</option>
+          <option value="ru">🇷🇺 Rus</option>
+          <option value="en">🇬🇧 Ingliz</option>
+          <option value="tr">🇹🇷 Turk</option>
+          <option value="ko">🇰🇷 Koreys</option>
+          <option value="hi">🇮🇳 Hind</option>
+        </select>
+      </div>
     </div>
 
     <div class="form-actions">

@@ -14,6 +14,9 @@ CREATE TABLE movies (
     message_id INTEGER NOT NULL,
     title TEXT,
     genre TEXT,
+    quality TEXT DEFAULT '',
+    language TEXT DEFAULT '',
+    year TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

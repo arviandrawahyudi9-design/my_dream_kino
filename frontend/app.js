@@ -150,6 +150,7 @@ function renderMovies() {
     <tr>
       <td><code style="background:var(--bg3);padding:3px 8px;border-radius:6px;font-size:12px;color:var(--accent)">${esc(m.code)}</code></td>
       <td style="font-weight:500;">${esc(m.title || '—')}</td>
+      <td>${m.year ? `<span class="badge badge-gray" style="font-size:11px">${esc(m.year)}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
       <td>${m.genre ? `<span class="badge badge-blue">${esc(m.genre)}</span>` : `<span class="badge badge-gray">—</span>`}</td>
       <td>${m.quality ? `<span class="badge badge-green" style="font-size:10px">${qualityLabel[m.quality] || m.quality}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
       <td>${m.language ? `<span class="badge badge-yellow" style="font-size:10px">${langLabel[m.language] || m.language}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
@@ -173,10 +174,13 @@ const $modal = document.getElementById("movie-modal");
 
 window.openMovieModal = () => {
   document.getElementById("modal-title").textContent = "🎬 Kino qo'shish";
-  document.getElementById("m-url").value   = "";
-  document.getElementById("m-code").value  = "";
-  document.getElementById("m-title").value = "";
-  document.getElementById("m-genre").value = "";
+  document.getElementById("m-url").value      = "";
+  document.getElementById("m-code").value     = "";
+  document.getElementById("m-title").value    = "";
+  document.getElementById("m-year").value     = "";
+  document.getElementById("m-genre").value    = "";
+  document.getElementById("m-quality").value  = "";
+  document.getElementById("m-language").value = "";
   $modal.classList.add("open");
 };
 
@@ -186,6 +190,7 @@ window.saveMovie = async () => {
   const url_or_id = document.getElementById("m-url").value.trim();
   const code      = document.getElementById("m-code").value.trim();
   const title     = document.getElementById("m-title").value.trim();
+  const year      = document.getElementById("m-year").value.trim();
   const genre     = document.getElementById("m-genre").value;
   const quality   = document.getElementById("m-quality").value;
   const language  = document.getElementById("m-language").value;
@@ -196,7 +201,7 @@ window.saveMovie = async () => {
     await api("/api/add-movie", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url_or_id, code, title, genre, quality, language })
+      body: JSON.stringify({ url_or_id, code, title, year, genre, quality, language })
     });
     closeModal();
     loadData();
@@ -300,6 +305,7 @@ function renderUserMovies() {
           <th>#</th>
           <th>Kino kodi</th>
           <th>Nomi</th>
+          <th>Yil</th>
           <th>Janr</th>
           <th>Yuklagan vaqti (UZB)</th>
         </tr>
@@ -310,6 +316,7 @@ function renderUserMovies() {
             <td style="color:var(--text3)">${i + 1}</td>
             <td><code style="background:var(--bg4);padding:2px 7px;border-radius:5px;color:var(--accent);font-size:11px">${esc(m.code)}</code></td>
             <td>${esc(m.title || "—")}</td>
+            <td>${m.year ? `<span class="badge badge-gray" style="font-size:10px">${esc(m.year)}</span>` : "—"}</td>
             <td>${m.genre ? `<span class="badge badge-blue" style="font-size:10px">${esc(m.genre)}</span>` : "—"}</td>
             <td style="color:var(--text2);font-size:12px">${fmtDate(m.downloaded_at)}</td>
           </tr>
