@@ -11,3 +11,7 @@ __pycache__/
 venv/
 .vscode/
 .idea/
+
+# Node & Cloudflare
+node_modules/
+.wrangler/
