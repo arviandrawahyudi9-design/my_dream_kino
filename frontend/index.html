@@ -719,6 +719,26 @@
   </div>
 </div>
 
+<!-- ═════════ MODAL: FOYDALANUVCHI KINOLARI ═════════ -->
+<div class="modal-overlay" id="user-detail-modal" onclick="if(event.target===this)closeUserModal()">
+  <div class="modal" style="max-width:680px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="modal-header">
+      <h3 id="udm-title">Foydalanuvchi kinolari</h3>
+      <button class="modal-close" onclick="closeUserModal()">×</button>
+    </div>
+    <!-- Filter bar -->
+    <div style="margin-bottom:14px;">
+      <select id="udm-genre" class="form-control" style="max-width:240px;">
+        <option value="">Barcha janrlar</option>
+      </select>
+    </div>
+    <!-- Table body -->
+    <div id="udm-body" style="overflow-y:auto;flex:1;">
+      <p style="color:var(--text3);text-align:center;padding:30px;">⌛ Yuklanmoqda...</p>
+    </div>
+  </div>
+</div>
+
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>

@@ -8,6 +8,18 @@ const api = async (path, options = {}) => {
   return data;
 };
 
+// UZB vaqt zonasi formatlovchi
+const fmtDate = (raw) => {
+  if (!raw) return "—";
+  try {
+    return new Date(raw).toLocaleString("uz-UZ", {
+      timeZone: "Asia/Tashkent",
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  } catch { return raw; }
+};
+
 const esc = v => String(v ?? "").replace(/[&<>'"]/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c])
 );
@@ -231,67 +243,86 @@ function renderUsers() {
   }).join("");
 }
 
-// Expand/collapse user downloads
-window.toggleExpand = async (userId) => {
-  const existingRow = document.getElementById(`expand-${userId}`);
-  if (existingRow) {
-    existingRow.remove();
-    return;
-  }
+// ── USER DETAIL MODAL ────────────────────────────────────────────────
+let _userMovies = [];
+let _userGenreFilter = "";
 
-  const parentRow = document.querySelector(`tr[data-uid="${userId}"]`);
-  const loadingRow = document.createElement("tr");
-  loadingRow.id = `expand-${userId}`;
-  loadingRow.className = "expand-row";
-  loadingRow.innerHTML = `<td colspan="5"><div class="expand-inner" style="color:var(--text3);font-size:13px;">⌛ Yuklanmoqda...</div></td>`;
-  parentRow.after(loadingRow);
+window.toggleExpand = async (userId) => {
+  const overlay = document.getElementById("user-detail-modal");
+  const body    = document.getElementById("udm-body");
+  const title   = document.getElementById("udm-title");
+  const genSel  = document.getElementById("udm-genre");
+
+  title.textContent  = `Foydalanuvchi #${userId} — kinolar`;
+  body.innerHTML     = `<p style="color:var(--text3);padding:20px;text-align:center">⌛ Yuklanmoqda...</p>`;
+  genSel.innerHTML   = `<option value="">Barcha janrlar</option>`;
+  _userGenreFilter   = "";
+  overlay.classList.add("open");
 
   try {
     const res = await api(`/api/user/${userId}/movies`);
-    const movies = res.movies || [];
+    _userMovies = res.movies || [];
 
-    let tableHtml;
-    if (movies.length === 0) {
-      tableHtml = `<p style="color:var(--text3);font-size:13px;">Hali hech qanday kino yuklanmagan.</p>`;
-    } else {
-      tableHtml = `
-        <table class="dl-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Kino kodi</th>
-              <th>Nomi</th>
-              <th>Janr</th>
-              <th>Yuklagan vaqti</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${movies.map((m, i) => `
-              <tr>
-                <td style="color:var(--text3)">${i + 1}</td>
-                <td><code style="background:var(--bg4);padding:2px 7px;border-radius:5px;color:var(--accent);font-size:11px">${esc(m.code)}</code></td>
-                <td>${esc(m.title || "—")}</td>
-                <td>${m.genre ? `<span class="badge badge-blue" style="font-size:10px">${esc(m.genre)}</span>` : "—"}</td>
-                <td style="color:var(--text3)">${m.downloaded_at ? new Date(m.downloaded_at).toLocaleString("uz-UZ") : "—"}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-    }
+    // genre options from loaded movies
+    const genres = [...new Set(_userMovies.map(m => m.genre).filter(Boolean))];
+    genSel.innerHTML = `<option value="">Barcha janrlar</option>` +
+      genres.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
 
-    loadingRow.innerHTML = `
-      <td colspan="5">
-        <div class="expand-inner">
-          <div class="expand-title">📥 Yuklagan kinolar — ${movies.length} ta</div>
-          ${tableHtml}
-        </div>
-      </td>
-    `;
+    renderUserMovies();
   } catch (e) {
-    loadingRow.innerHTML = `<td colspan="5"><div class="expand-inner" style="color:#f87171">Xatolik: ${e.message}</div></td>`;
+    body.innerHTML = `<p style="color:#f87171;padding:20px">${e.message}</p>`;
   }
 };
+
+function renderUserMovies() {
+  const body = document.getElementById("udm-body");
+  const list = _userMovies.filter(m =>
+    !_userGenreFilter || m.genre === _userGenreFilter
+  );
+
+  if (list.length === 0) {
+    body.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎞️</div>
+        <p>Bu janrda kino yo'q.</p>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = `
+    <table class="dl-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Kino kodi</th>
+          <th>Nomi</th>
+          <th>Janr</th>
+          <th>Yuklagan vaqti (UZB)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map((m, i) => `
+          <tr>
+            <td style="color:var(--text3)">${i + 1}</td>
+            <td><code style="background:var(--bg4);padding:2px 7px;border-radius:5px;color:var(--accent);font-size:11px">${esc(m.code)}</code></td>
+            <td>${esc(m.title || "—")}</td>
+            <td>${m.genre ? `<span class="badge badge-blue" style="font-size:10px">${esc(m.genre)}</span>` : "—"}</td>
+            <td style="color:var(--text2);font-size:12px">${fmtDate(m.downloaded_at)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>`;
+}
+
+window.closeUserModal = () => {
+  document.getElementById("user-detail-modal").classList.remove("open");
+  _userMovies = [];
+};
+
+document.getElementById("udm-genre").addEventListener("change", e => {
+  _userGenreFilter = e.target.value;
+  renderUserMovies();
+});
 
 // ── SEARCH & FILTER EVENTS ────────────────────────────────────────────
 document.getElementById("movie-search").addEventListener("input", renderMovies);
