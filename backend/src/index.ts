@@ -26,12 +26,11 @@ app.get('/api/dashboard', async (c) => {
   const verifiedUsersReq = await c.env.DB.prepare('SELECT count(*) as count FROM users WHERE verified = 1').first('count') || 0
   const moviesReq = await c.env.DB.prepare('SELECT count(*) as count FROM movies').first('count') || 0
   
-  let moviesQuery = 'SELECT code, message_id, title, genre, created_at FROM movies ORDER BY created_at DESC'
   let movies = []
   if (genre) {
-    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, created_at FROM movies WHERE genre = ? ORDER BY created_at DESC').bind(genre).all()).results
+    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, created_at FROM movies WHERE genre = ? ORDER BY created_at DESC').bind(genre).all()).results
   } else {
-    movies = (await c.env.DB.prepare(moviesQuery).all()).results
+    movies = (await c.env.DB.prepare('SELECT code, message_id, title, genre, quality, language, created_at FROM movies ORDER BY created_at DESC').all()).results
   }
 
   const allUsersRes = await c.env.DB.prepare(`
@@ -63,9 +62,14 @@ app.post('/api/add-movie', async (c) => {
   if (isNaN(message_id)) return c.json({ success: false, message: "Message ID xato." }, 400)
 
   await c.env.DB.prepare(`
-    INSERT INTO movies (code, message_id, title, genre) VALUES (?, ?, ?, ?)
-    ON CONFLICT(code) DO UPDATE SET message_id=excluded.message_id, title=excluded.title, genre=excluded.genre
-  `).bind(code, message_id, data.title || "", data.genre || "").run()
+    INSERT INTO movies (code, message_id, title, genre, quality, language) VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(code) DO UPDATE SET
+      message_id=excluded.message_id,
+      title=excluded.title,
+      genre=excluded.genre,
+      quality=excluded.quality,
+      language=excluded.language
+  `).bind(code, message_id, data.title || "", data.genre || "", data.quality || "", data.language || "").run()
 
   return c.json({ success: true, message: "Kino saqlandi!" })
 })
@@ -226,9 +230,17 @@ app.post('/webhook', async (c) => {
         const movie = await c.env.DB.prepare('SELECT * FROM movies WHERE code = ?').bind(code).first()
         
         if (movie) {
-          let caption = `🎬 **${movie.title}**\n`
-          if (movie.genre) caption += `🎭 Janr: ${movie.genre}\n`
-          caption += `\n🍿 Yoqimli tomosha!`
+          // Build quality & language badges
+          const qualityMap: Record<string,string> = { '480': '📺 480p', '720': '🎬 720p HD', '1080': '🎥 1080p Full HD', '4k': '✨ 4K Ultra HD' }
+          const langMap: Record<string,string> = { 'uz': '🇺🇿 O\'zbek', 'ru': '🇷🇺 Rus', 'en': '🇬🇧 Ingliz', 'tr': '🇹🇷 Turk', 'ko': '🇰🇷 Koreys', 'hi': '🇮🇳 Hind' }
+
+          let caption = `🎬 *${movie.title || 'Kino'}*\n`
+          caption += `━━━━━━━━━━━━━━━\n`
+          if (movie.genre)    caption += `🏷 Janr: ${movie.genre}\n`
+          if (movie.quality)  caption += `${qualityMap[movie.quality as string] || movie.quality}\n`
+          if (movie.language) caption += `${langMap[movie.language as string] || movie.language}\n`
+          caption += `━━━━━━━━━━━━━━━\n`
+          caption += `🍿 Yoqimli tomosha!`
           
           await sendRequest(TOKEN, 'copyMessage', {
             chat_id: chatId,

@@ -143,16 +143,18 @@ function renderMovies() {
     return;
   }
 
+  const qualityLabel = { '480': '📺 480p', '720': '🎬 720p HD', '1080': '🎥 1080p Full HD', '4k': '✨ 4K' };
+  const langLabel = { 'uz': '🇺🇿 O\'z', 'ru': '🇷🇺 Rus', 'en': '🇬🇧 Ing', 'tr': '🇹🇷 Turk', 'ko': '🇰🇷 Kor', 'hi': '🇮🇳 Hind' };
+
   tbody.innerHTML = list.map(m => `
     <tr>
       <td><code style="background:var(--bg3);padding:3px 8px;border-radius:6px;font-size:12px;color:var(--accent)">${esc(m.code)}</code></td>
-      <td style="font-weight:500;">${esc(m.title || "—")}</td>
-      <td>${m.genre ? `<span class="badge badge-blue">${esc(m.genre)}</span>` : `<span class="badge badge-gray">Janrsiz</span>`}</td>
-      <td style="color:var(--text3);font-size:12px;">${m.message_id}</td>
+      <td style="font-weight:500;">${esc(m.title || '—')}</td>
+      <td>${m.genre ? `<span class="badge badge-blue">${esc(m.genre)}</span>` : `<span class="badge badge-gray">—</span>`}</td>
+      <td>${m.quality ? `<span class="badge badge-green" style="font-size:10px">${qualityLabel[m.quality] || m.quality}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
+      <td>${m.language ? `<span class="badge badge-yellow" style="font-size:10px">${langLabel[m.language] || m.language}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
       <td style="text-align:right;">
-        <button class="btn btn-danger btn-xs" onclick="deleteMovie('${esc(m.code)}')">
-          🗑 O'chirish
-        </button>
+        <button class="btn btn-danger btn-xs" onclick="deleteMovie('${esc(m.code)}')">🗑 O'chirish</button>
       </td>
     </tr>
   `).join("");
@@ -185,6 +187,8 @@ window.saveMovie = async () => {
   const code      = document.getElementById("m-code").value.trim();
   const title     = document.getElementById("m-title").value.trim();
   const genre     = document.getElementById("m-genre").value;
+  const quality   = document.getElementById("m-quality").value;
+  const language  = document.getElementById("m-language").value;
 
   if (!url_or_id || !code) return alert("Majburiy maydonlarni to'ldiring!");
   try {
@@ -192,7 +196,7 @@ window.saveMovie = async () => {
     await api("/api/add-movie", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url_or_id, code, title, genre })
+      body: JSON.stringify({ url_or_id, code, title, genre, quality, language })
     });
     closeModal();
     loadData();

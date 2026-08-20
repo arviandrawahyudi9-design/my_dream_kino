@@ -629,7 +629,8 @@
               <th>Kod</th>
               <th>Kino nomi</th>
               <th>Janr</th>
-              <th>Message ID</th>
+              <th>Sifat</th>
+              <th>Til</th>
               <th style="text-align:right;">Amallar</th>
             </tr>
           </thead>
@@ -705,10 +706,34 @@
         <input id="m-title" class="form-control" placeholder="Kino nomi">
       </div>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>JANR</label>
+        <select id="m-genre" class="form-control">
+          <option value="">Janrsiz</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>SIFAT (KOKLIK)</label>
+        <select id="m-quality" class="form-control">
+          <option value="">Belgilanmagan</option>
+          <option value="480">📺 480p</option>
+          <option value="720">🎬 720p HD</option>
+          <option value="1080">🎥 1080p Full HD</option>
+          <option value="4k">✨ 4K Ultra HD</option>
+        </select>
+      </div>
+    </div>
     <div class="form-group">
-      <label>JANR</label>
-      <select id="m-genre" class="form-control">
-        <option value="">Janrsiz</option>
+      <label>KINO TILI</label>
+      <select id="m-language" class="form-control">
+        <option value="">Belgilanmagan</option>
+        <option value="uz">🇺🇿 O'zbek</option>
+        <option value="ru">🇷🇺 Rus</option>
+        <option value="en">🇬🇧 Ingliz</option>
+        <option value="tr">🇹🇷 Turk</option>
+        <option value="ko">🇰🇷 Koreys</option>
+        <option value="hi">🇮🇳 Hind</option>
       </select>
     </div>
 
