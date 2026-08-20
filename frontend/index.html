@@ -3,312 +3,718 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kino Bot — Admin Panel</title>
+  <title>KinoBot — Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0a0f1c;
-      --bg2: #111827;
-      --bg3: #1a2235;
-      --border: #1e2d45;
-      --accent: #6366f1;
-      --accent2: #818cf8;
-      --danger: #ef4444;
-      --success: #22c55e;
-      --warn: #f59e0b;
-      --text: #f1f5f9;
-      --muted: #64748b;
-      --sidebar-w: 240px;
+      --bg:        #07080f;
+      --bg2:       #0e1120;
+      --bg3:       #151929;
+      --bg4:       #1c2237;
+      --border:    #232b42;
+      --border2:   #2e3a56;
+      --accent:    #6366f1;
+      --accent-h:  #4f46e5;
+      --accent-glow: rgba(99,102,241,0.25);
+      --violet:    #8b5cf6;
+      --cyan:      #22d3ee;
+      --green:     #10b981;
+      --red:       #ef4444;
+      --yellow:    #f59e0b;
+      --text:      #e2e8f0;
+      --text2:     #94a3b8;
+      --text3:     #475569;
+      --sidebar-w: 260px;
+      --radius:    12px;
     }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
-    /* ── SIDEBAR ── */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ═══════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════ */
     .sidebar {
-      width: var(--sidebar-w); min-height: 100vh; background: var(--bg2);
-      border-right: 1px solid var(--border); display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; z-index: 100;
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
     }
-    .sidebar-logo {
-      padding: 24px 20px 20px; border-bottom: 1px solid var(--border);
-    }
-    .sidebar-logo h1 { font-size: 18px; font-weight: 700; color: var(--accent2); }
-    .sidebar-logo p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .sidebar-nav { padding: 12px 10px; flex: 1; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
-      border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 14px;
-      font-weight: 500; transition: all .18s; margin-bottom: 4px; border: none;
-      background: none; width: 100%; text-align: left;
-    }
-    .nav-item:hover { background: var(--bg3); color: var(--text); }
-    .nav-item.active { background: var(--accent); color: white; }
-    .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
-    .sidebar-footer { padding: 14px 20px; border-top: 1px solid var(--border); }
-    .sidebar-footer p { font-size: 11px; color: var(--muted); }
 
-    /* ── MAIN ── */
-    .main { margin-left: var(--sidebar-w); flex: 1; padding: 28px; min-height: 100vh; }
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
+    .sidebar-brand {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .topbar h2 { font-size: 20px; font-weight: 700; }
-    #global-status { font-size: 13px; color: var(--muted); }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+    .brand-text h2 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .brand-text p  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 18px 20px 6px;
+    }
+
+    .sidebar-nav { flex: 1; padding: 8px; }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: none;
+      color: var(--text2);
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .18s;
+      text-align: left;
+      margin-bottom: 2px;
+      position: relative;
+    }
+    .nav-btn .nav-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+      transition: all .18s;
+    }
+    .nav-btn:hover { color: var(--text); background: var(--bg3); }
+    .nav-btn:hover .nav-icon { background: var(--bg4); }
+
+    .nav-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .nav-btn.active .nav-icon {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text3);
+    }
+    .status-dot::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      flex-shrink: 0;
+    }
+    #global-status { font-size: 12px; color: var(--text3); }
     #global-status.error { color: #fca5a5; }
 
-    /* ── STATS ── */
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-    .stat-card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
-      padding: 18px 20px;
+    /* ═══════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════ */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+      background: var(--bg);
     }
-    .stat-card .val { font-size: 30px; font-weight: 700; color: var(--accent2); }
-    .stat-card .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-    /* ── SECTIONS ── */
-    .section { display: none; }
+    /* Top header */
+    .page-header {
+      padding: 24px 32px 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .page-header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-title .title-icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    /* ═══════════════════════════════
+       SECTIONS
+    ═══════════════════════════════ */
+    .section { display: none; padding: 28px 32px; }
     .section.active { display: block; }
 
-    /* ── CARD ── */
+    /* ═══════════════════════════════
+       STAT CARDS
+    ═══════════════════════════════ */
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      border-radius: 0 0 0 80px;
+      opacity: .07;
+    }
+    .stat-card.blue::before { background: var(--accent); }
+    .stat-card.violet::before { background: var(--violet); }
+    .stat-card.cyan::before { background: var(--cyan); }
+    .stat-card:hover { border-color: var(--border2); }
+
+    .stat-icon {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+    .stat-card.blue .stat-icon { background: rgba(99,102,241,.15); }
+    .stat-card.violet .stat-icon { background: rgba(139,92,246,.15); }
+    .stat-card.cyan .stat-icon { background: rgba(34,211,238,.15); }
+
+    .stat-val {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-card.blue .stat-val { color: var(--accent); }
+    .stat-card.violet .stat-val { color: var(--violet); }
+    .stat-card.cyan .stat-val { color: var(--cyan); }
+    .stat-lbl { font-size: 13px; color: var(--text2); font-weight: 500; }
+
+    /* ═══════════════════════════════
+       CARD
+    ═══════════════════════════════ */
     .card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
-      padding: 20px; margin-bottom: 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 18px;
     }
-    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--text); }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header h3 { font-size: 14px; font-weight: 600; }
+    .card-body { padding: 20px; }
 
-    /* ── FORMS ── */
-    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
-    input, select {
-      width: 100%; padding: 10px 12px; border-radius: 8px;
-      border: 1px solid var(--border); background: var(--bg3); color: var(--text);
-      font-size: 14px; outline: none; transition: border .15s;
-    }
-    input:focus, select:focus { border-color: var(--accent); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* ═══════════════════════════════
+       BUTTONS
+    ═══════════════════════════════ */
     .btn {
-      display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px;
-      border-radius: 8px; border: none; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all .15s; white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
     }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: #4f46e5; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #b91c1c; }
-    .btn-warn { background: var(--warn); color: #0a0f1c; }
-    .btn-warn:hover { background: #d97706; }
-    .btn-success { background: var(--success); color: #0a0f1c; }
-    .btn-sm { padding: 6px 10px; font-size: 12px; }
-    .btn-full { width: 100%; justify-content: center; margin-top: 12px; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      color: white;
+      box-shadow: 0 2px 10px var(--accent-glow);
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-danger { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.28); }
+    .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg4); color: var(--text); }
+    .btn-success { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+    .btn-success:hover { background: rgba(16,185,129,.28); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-xs { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
+    .btn-icon { padding: 8px; border-radius: 8px; }
 
-    /* ── TABLE ── */
-    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead { background: var(--bg3); }
-    th { padding: 11px 14px; text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; white-space: nowrap; }
-    td { padding: 11px 14px; border-top: 1px solid var(--border); vertical-align: middle; }
-    tr.expand-row td { background: #0d1525; padding: 0; }
-    .expand-inner { padding: 14px 20px; }
-    tr:hover > td { background: rgba(99,102,241,.06); }
-    tr.expand-row:hover > td { background: #0d1525; }
+    /* ═══════════════════════════════
+       FORMS
+    ═══════════════════════════════ */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 6px;
+      letter-spacing: .02em;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; }
+
+    /* ═══════════════════════════════
+       TABLE
+    ═══════════════════════════════ */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--bg3); }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+    td {
+      padding: 13px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    tbody tr { transition: background .12s; }
+    tbody tr:hover > td { background: rgba(99,102,241,.05); }
+    tr.expand-row td { background: #0a0d18 !important; padding: 0; }
+    tr.expand-row:hover td { background: #0a0d18 !important; }
+
+    /* ═══════════════════════════════
+       BADGES
+    ═══════════════════════════════ */
     .badge {
-      display: inline-block; padding: 2px 8px; border-radius: 20px;
-      font-size: 11px; font-weight: 600;
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
     }
-    .badge-blue { background: #1e3a5f; color: #60a5fa; }
-    .badge-green { background: #14532d; color: #4ade80; }
-    .badge-gray { background: #1e293b; color: var(--muted); }
+    .badge-blue   { background: rgba(99,102,241,.15); color: #a5b4fc; }
+    .badge-green  { background: rgba(16,185,129,.15); color: #34d399; }
+    .badge-red    { background: rgba(239,68,68,.15);  color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,.15); color: #fcd34d; }
+    .badge-gray   { background: rgba(148,163,184,.1); color: var(--text2); }
 
-    /* ── FILTER BAR ── */
-    .filter-bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    /* ═══════════════════════════════
+       FILTER BAR
+    ═══════════════════════════════ */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-bar .form-control { flex: 1; min-width: 180px; }
     .filter-bar select { width: auto; min-width: 160px; }
-    .filter-bar input { flex: 1; min-width: 180px; }
 
-    /* ── GENRES LIST ── */
-    .genre-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    /* ═══════════════════════════════
+       GENRE CHIPS
+    ═══════════════════════════════ */
+    .genre-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .genre-chip {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: 20px; padding: 4px 12px; font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12.5px;
+      color: var(--text2);
+      transition: all .15s;
     }
-    .genre-chip button {
-      background: none; border: none; color: var(--danger); cursor: pointer;
-      font-size: 15px; line-height: 1; padding: 0;
+    .genre-chip:hover { border-color: var(--border2); color: var(--text); }
+    .genre-chip .del-genre {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: rgba(239,68,68,.15);
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background .15s;
     }
+    .genre-chip .del-genre:hover { background: rgba(239,68,68,.35); }
 
-    /* ── MODAL ── */
+    /* ═══════════════════════════════
+       EXPAND ROW
+    ═══════════════════════════════ */
+    .expand-inner { padding: 18px 20px 20px; }
+    .expand-title { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 12px; letter-spacing: .05em; text-transform: uppercase; }
+    .dl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .dl-table th { color: var(--text3); padding: 7px 12px; font-size: 11px; font-weight: 600; text-align: left; background: var(--bg3); }
+    .dl-table td { padding: 8px 12px; border-top: 1px solid var(--border); }
+
+    /* ═══════════════════════════════
+       MODAL
+    ═══════════════════════════════ */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.65);
-      display: none; align-items: center; justify-content: center; z-index: 200;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
-      padding: 28px; width: 100%; max-width: 440px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      animation: modal-in .2s ease;
     }
-    .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(.96) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .modal-close {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      border: none;
+      background: var(--bg3);
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { background: var(--bg4); color: var(--text); }
 
-    /* ── DIVIDER ── */
-    .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+    /* ═══════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════ */
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .5; }
+    .empty-state p { color: var(--text3); font-size: 13px; }
 
-    /* ── DOWNLOAD TABLE (expanded row) ── */
-    .dl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .dl-table th { color: var(--muted); padding: 6px 10px; text-align: left; }
-    .dl-table td { padding: 6px 10px; border-top: 1px solid var(--border); }
+    /* ═══════════════════════════════
+       DIVIDER
+    ═══════════════════════════════ */
+    hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
-    /* ── EMPTY ── */
-    .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
-
-    @media(max-width: 780px) {
-      .sidebar { width: 60px; }
-      .sidebar-logo p, .nav-item span, .sidebar-footer p { display: none; }
-      .sidebar-logo h1 { font-size: 20px; }
-      .nav-item { justify-content: center; }
-      .main { margin-left: 60px; padding: 16px; }
-      .stats { grid-template-columns: 1fr 1fr; }
+    /* ═══════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════ */
+    @media (max-width: 900px) {
+      :root { --sidebar-w: 70px; }
+      .brand-text, .sidebar-section-label, .nav-btn span { display: none; }
+      .nav-btn { justify-content: center; padding: 10px; }
+      .nav-btn .nav-icon { width: 36px; height: 36px; font-size: 17px; }
+      .section { padding: 20px 16px; }
+      .page-header { padding: 16px 16px 0; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
+<!-- ═════════ SIDEBAR ═════════ -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <h1>🎬 KinoBot</h1>
-    <p>Admin panel</p>
+  <div class="sidebar-brand">
+    <div class="brand-icon">🎬</div>
+    <div class="brand-text">
+      <h2>KinoBot</h2>
+      <p>Admin Panel</p>
+    </div>
   </div>
+
   <nav class="sidebar-nav">
-    <button class="nav-item active" data-section="stats">
-      <span class="icon">📊</span><span>Statistika</span>
+    <div class="sidebar-section-label">Menyu</div>
+
+    <button class="nav-btn active" data-section="users">
+      <div class="nav-icon">👥</div>
+      <span>Foydalanuvchilar</span>
     </button>
-    <button class="nav-item" data-section="movies">
-      <span class="icon">🎥</span><span>Kinolar</span>
+
+    <button class="nav-btn" data-section="movies">
+      <div class="nav-icon">🎥</div>
+      <span>Kinolar</span>
     </button>
-    <button class="nav-item" data-section="users">
-      <span class="icon">👥</span><span>Foydalanuvchilar</span>
+
+    <button class="nav-btn" data-section="stats">
+      <div class="nav-icon">📊</div>
+      <span>Statistika</span>
     </button>
   </nav>
+
   <div class="sidebar-footer">
-    <p id="global-status">Yuklanmoqda...</p>
+    <div class="status-dot">
+      <span id="global-status">Ishga tayyor</span>
+    </div>
   </div>
 </aside>
 
-<!-- MAIN -->
-<main class="main">
+<!-- ═════════ MAIN ═════════ -->
+<div class="main-content">
 
-  <!-- ─── STATISTIKA ─── -->
-  <section class="section active" id="sec-stats">
-    <div class="topbar">
-      <h2>📊 Statistika</h2>
-    </div>
-    <div class="stats">
-      <div class="stat-card">
-        <div class="val" id="stat-movies">0</div>
-        <div class="lbl">Jami kinolar</div>
-      </div>
-      <div class="stat-card">
-        <div class="val" id="stat-users">0</div>
-        <div class="lbl">Jami foydalanuvchilar</div>
-      </div>
-      <div class="stat-card">
-        <div class="val" id="stat-verified">0</div>
-        <div class="lbl">Tasdiqlanganlar</div>
+  <!-- ── FOYDALANUVCHILAR ── -->
+  <section class="section active" id="sec-users">
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="page-title">
+          <div class="title-icon">👥</div>
+          Foydalanuvchilar
+        </div>
+        <div class="header-actions">
+          <input id="user-search" class="form-control" placeholder="🔍  ID yoki telefon..." style="width:220px;">
+        </div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Tezkor ma'lumot</div>
-      <p style="color:var(--muted);font-size:14px;">Qo'shimcha statistika grafiklar keyingi versiyada qo'shiladi. Hozircha chap menyu orqali Kinolar va Foydalanuvchilar bo'limlariga o'ting.</p>
+
+    <div style="padding:24px 32px;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:44px;"></th>
+              <th>Telegram ID</th>
+              <th>Telefon raqam</th>
+              <th>Holati</th>
+              <th>Yuklanganlar</th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">⌛</div><p>Yuklanmoqda...</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
-  <!-- ─── KINOLAR ─── -->
+  <!-- ── KINOLAR ── -->
   <section class="section" id="sec-movies">
-    <div class="topbar">
-      <h2>🎥 Kinolar</h2>
-      <button class="btn btn-primary" onclick="openAddModal()">＋ Kino qo'shish</button>
-    </div>
-
-    <!-- Genre management -->
-    <div class="card">
-      <div class="card-title">Janrlar</div>
-      <div style="display:flex;gap:8px;">
-        <input id="genre-input" placeholder="Yangi janr nomi..." style="flex:1;">
-        <button class="btn btn-success" onclick="addGenre()">Qo'shish</button>
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="page-title">
+          <div class="title-icon">🎥</div>
+          Kinolar
+        </div>
+        <button class="btn btn-primary" onclick="openMovieModal()">＋ Kino qo'shish</button>
       </div>
-      <div class="genre-chips" id="genre-chips"></div>
     </div>
 
-    <!-- Filter -->
-    <div class="filter-bar">
-      <input id="movie-search" placeholder="🔍 Kino nomi yoki kod bo'yicha qidiring...">
-      <select id="filter-genre">
-        <option value="">Barcha janrlar</option>
+    <div style="padding:24px 32px;">
+      <!-- Genre Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🏷️ Janrlar</h3>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:8px;">
+            <input id="genre-input" class="form-control" placeholder="Yangi janr nomi...">
+            <button class="btn btn-success" onclick="addGenre()">＋ Qo'shish</button>
+          </div>
+          <div class="genre-chips" id="genre-chips">
+            <span style="color:var(--text3);font-size:12px;">Janrlar yuklanmoqda...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter + Table -->
+      <div class="filter-bar">
+        <input id="movie-search" class="form-control" placeholder="🔍  Kino nomi yoki kodi...">
+        <select id="filter-genre" class="form-control">
+          <option value="">Barcha janrlar</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Kod</th>
+              <th>Kino nomi</th>
+              <th>Janr</th>
+              <th>Message ID</th>
+              <th style="text-align:right;">Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="movies-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">⌛</div><p>Yuklanmoqda...</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── STATISTIKA ── -->
+  <section class="section" id="sec-stats">
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div class="page-title">
+          <div class="title-icon">📊</div>
+          Statistika
+        </div>
+        <button class="btn btn-ghost" onclick="loadData()">🔄 Yangilash</button>
+      </div>
+    </div>
+
+    <div style="padding:24px 32px;">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon">🎬</div>
+          <div class="stat-val" id="stat-movies">—</div>
+          <div class="stat-lbl">Jami kinolar</div>
+        </div>
+        <div class="stat-card violet">
+          <div class="stat-icon">👥</div>
+          <div class="stat-val" id="stat-users">—</div>
+          <div class="stat-lbl">Jami foydalanuvchilar</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" id="stat-verified">—</div>
+          <div class="stat-lbl">Tasdiqlanganlar</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="color:var(--text2);font-size:14px;line-height:1.7;">
+          <p>📌 <b style="color:var(--text);">Backend:</b> Cloudflare Workers + D1 Database</p>
+          <p>📌 <b style="color:var(--text);">Bot:</b> Telegram Webhook — https://kino-bot-backend.arviandrawahyudi9.workers.dev</p>
+          <p>📌 <b style="color:var(--text);">Frontend:</b> Cloudflare Pages — GitHub CI/CD</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═════════ MODAL: KINO QO'SHISH ═════════ -->
+<div class="modal-overlay" id="movie-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">🎬 Kino qo'shish</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="form-group">
+      <label>TELEGRAM HAVOLA YOKI MESSAGE ID</label>
+      <input id="m-url" class="form-control" placeholder="https://t.me/kanalname/123 yoki 123">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>KINO KODI</label>
+        <input id="m-code" class="form-control" placeholder="101">
+      </div>
+      <div class="form-group">
+        <label>KINO NOMI</label>
+        <input id="m-title" class="form-control" placeholder="Kino nomi">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>JANR</label>
+      <select id="m-genre" class="form-control">
+        <option value="">Janrsiz</option>
       </select>
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Kod</th>
-            <th>Nomi</th>
-            <th>Janr</th>
-            <th>Message ID</th>
-            <th style="text-align:right;">Amallar</th>
-          </tr>
-        </thead>
-        <tbody id="movies-body"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─── FOYDALANUVCHILAR ─── -->
-  <section class="section" id="sec-users">
-    <div class="topbar">
-      <h2>👥 Foydalanuvchilar</h2>
-      <input id="user-search" placeholder="🔍 ID yoki telefon bo'yicha..." style="width:240px;">
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Telegram ID</th>
-            <th>Telefon</th>
-            <th>Holati</th>
-            <th>Yuklashlar</th>
-          </tr>
-        </thead>
-        <tbody id="users-body"></tbody>
-      </table>
-    </div>
-  </section>
-
-</main>
-
-<!-- ─── ADD/EDIT MODAL ─── -->
-<div class="modal-overlay" id="movie-modal">
-  <div class="modal">
-    <h3 id="modal-title">Kino qo'shish</h3>
-    <label>Telegram havola yoki Message ID</label>
-    <input id="m-url" placeholder="https://t.me/... yoki raqam">
-    <div class="form-row">
-      <div>
-        <label>Kino kodi</label>
-        <input id="m-code" placeholder="101">
-      </div>
-      <div>
-        <label>Kino nomi</label>
-        <input id="m-title" placeholder="Kino nomi">
-      </div>
-    </div>
-    <label>Janr</label>
-    <select id="m-genre"><option value="">Janrsiz</option></select>
-    <div class="modal-actions">
-      <button class="btn btn-danger btn-sm" onclick="closeModal()">Bekor qilish</button>
-      <button class="btn btn-primary" onclick="saveMovie()">Saqlash</button>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveMovie()">💾 Saqlash</button>
     </div>
   </div>
 </div>
